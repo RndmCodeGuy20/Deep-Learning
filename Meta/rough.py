@@ -1,13 +1,16 @@
-model = tf.keras.models.Sequential(
-    [
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(512, activation=tf.nn.relu),
-        tf.keras.layers.Dense(10, activation=tf.nn.softmax),
-    ]
-)
+def seasonalPattern(seasonTime):
+    dataPattern = np.where(
+        seasonTime < 0.4,
+        np.cos(seasonTime * 2 * np.pi),
+        1 / np.exp(3 * seasonTime),
+    )
 
-model.compile(
-    optimizer=tf.optimizers.Adam(),
-    loss="sparse_categorical_crossentropy",
-    metrics=["accuracy"],
-)
+    return dataPattern
+
+
+def seasonality(time, period, amplitude=1, phase=0):
+    seasonTime = ((time + phase) % period) / period
+
+    dataPattern = amplitude * seasonalPattern(seasonTime=seasonTime)
+
+    return dataPattern
